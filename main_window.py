@@ -6,6 +6,7 @@ class mainWindow(QMainWindow):
 
     operators = ['+','-','*','/','** 2','** 0.5']
     operation_list = []
+    number_allowed = True
 
     def __init__(self):
         super().__init__()
@@ -33,6 +34,10 @@ class mainWindow(QMainWindow):
     @classmethod
     def operation_list_clear(cls):
         cls.operation_list = []
+
+    @classmethod
+    def number_allowed_change(cls,value):
+        cls.number_allowed = value
 
 
     def create_main_layout(self):
@@ -147,34 +152,43 @@ class mainWindow(QMainWindow):
             self.display.setText(self.display.text() + '0')
 
     def click_button_1(self):
-        self.display.setText(self.display.text() + '1')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '1')
 
     def click_button_2(self):
-        self.display.setText(self.display.text() + '2')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '2')
 
     def click_button_3(self):
-        self.display.setText(self.display.text() + '3')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '3')
 
     def click_button_4(self):
-        self.display.setText(self.display.text() + '4')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '4')
 
     def click_button_5(self):
-        self.display.setText(self.display.text() + '5')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '5')
 
     def click_button_6(self):
-        self.display.setText(self.display.text() + '6')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '6')
 
     def click_button_7(self):
-        self.display.setText(self.display.text() + '7')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '7')
 
     def click_button_8(self):
-        self.display.setText(self.display.text() + '8')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '8')
 
     def click_button_9(self):
-        self.display.setText(self.display.text() + '9')
+        if self.number_allowed:
+            self.display.setText(self.display.text() + '9')
 
     def click_button_comma(self):
-        if '.' not in self.display.text():
+        if '.' not in self.display.text() and self.number_allowed:
             if len(self.display.text()) == 0:
                 self.display.setText('0.')
             else:
@@ -187,6 +201,7 @@ class mainWindow(QMainWindow):
 
     def click_button_clear_recent(self):
         if len(self.operation_list) > 0:
+            self.display.setText('')
             self.operation_list_remove_last()
             self.display_formula.setText(" ".join(self.operation_list))
 
@@ -257,6 +272,7 @@ class mainWindow(QMainWindow):
 
     def click_button_rbracket(self):
         self.append_number()
+
         if self.operation_list.count(')') < self.operation_list.count('('):
             if len(self.operation_list) > 1:
                 if self.operation_list[-1] != '(' and self.operation_list[-1] not in self.operators:
@@ -273,6 +289,8 @@ class mainWindow(QMainWindow):
                 self.operation_list_clear()
             except ZeroDivisionError:
                 self.operation_list_clear()
+
+            self.number_allowed_change(False)
         else:
             print('oky')
 
@@ -281,16 +299,11 @@ class mainWindow(QMainWindow):
         if self.display.text() != '':
             self.operation_list_append(self.display.text())
             self.display.setText('')
+            self.number_allowed_change(True)
 
     def check_formula(self):
-        if self.operation_list.count('(') == self.operation_list.count(')'):
+        if self.operation_list.count('(') == self.operation_list.count(')') and self.display.text() != '':
             return True
-
-
-
-
-
-
 
 
 
