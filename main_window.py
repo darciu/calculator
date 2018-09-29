@@ -22,6 +22,7 @@ class mainWindow(QMainWindow):
         self.central_widget.setLayout(self.stacked_layout)
         self.setCentralWidget(self.central_widget)
 
+    ##class methods
 
     @classmethod
     def operation_list_append(cls, value):
@@ -40,14 +41,14 @@ class mainWindow(QMainWindow):
         cls.number_allowed = value
 
 
-    def create_main_layout(self):
-
-
-        #self.main_layout = QVBoxLayout()
-
+    def create_main_layout(self):       #main layout
 
         self.display = QLineEdit()
+        self.display.setAlignment(Qt.AlignRight)
+        self.display.setReadOnly(True)
+
         self.display_formula = QLineEdit()
+        self.display_formula.setReadOnly(True)
 
         #buttons
 
@@ -67,10 +68,16 @@ class mainWindow(QMainWindow):
         self.button_multiply = QPushButton('*')
         self.button_divide = QPushButton('/')
         self.button_equals = QPushButton('=')
+
         self.button_sqrt = QPushButton('SQRT')
-        self.button_power = QPushButton('^2')
+        self.button_2power = QPushButton('^2')
         self.button_lbracket = QPushButton('(')
         self.button_rbracket = QPushButton(')')
+        self.button_cbrt = QPushButton('CBRT')
+        self.button_3power = QPushButton('^3')
+        self.button_absolute = QPushButton('ABS')
+        self.button_round = QPushButton('RND')
+
         self.button_clear = QPushButton('C')
         self.button_clear_recent = QPushButton('<-')
 
@@ -95,18 +102,23 @@ class mainWindow(QMainWindow):
         self.button_8.clicked.connect(self.click_button_8)
         self.button_9.clicked.connect(self.click_button_9)
         self.button_comma.clicked.connect(self.click_button_comma)
+
         self.button_clear.clicked.connect(self.click_button_clear)
         self.button_clear_recent.clicked.connect(self.click_button_clear_recent)
+
         self.button_plus.clicked.connect(self.click_button_plus)
         self.button_minus.clicked.connect(self.click_button_minus)
         self.button_multiply.clicked.connect(self.click_button_multiply)
         self.button_divide.clicked.connect(self.click_button_divide)
         self.button_sqrt.clicked.connect(self.click_button_sqrt)
-        self.button_power.clicked.connect(self.click_button_power)
+        self.button_2power.clicked.connect(self.click_button_2power)
         self.button_lbracket.clicked.connect(self.click_button_lbracket)
         self.button_rbracket.clicked.connect(self.click_button_rbracket)
+        self.button_cbrt.clicked.connect(self.click_button_cbrt)
+        self.button_3power.clicked.connect(self.click_button_3power)
+        self.button_absolute.clicked.connect(self.click_button_absolute)
+        self.button_round.clicked.connect(self.click_button_round)
         self.button_equals.clicked.connect(self.click_button_equals)
-
 
         #build grids
 
@@ -128,9 +140,13 @@ class mainWindow(QMainWindow):
         self.operators_grid.addWidget(self.button_multiply, 2, 0)
         self.operators_grid.addWidget(self.button_divide, 3, 0)
         self.operators_grid.addWidget(self.button_sqrt,0,1)
-        self.operators_grid.addWidget(self.button_power, 1, 1)
+        self.operators_grid.addWidget(self.button_2power, 1, 1)
         self.operators_grid.addWidget(self.button_lbracket, 2, 1)
         self.operators_grid.addWidget(self.button_rbracket, 3, 1)
+        self.operators_grid.addWidget(self.button_cbrt, 0, 2)
+        self.operators_grid.addWidget(self.button_3power, 1, 2)
+        self.operators_grid.addWidget(self.button_absolute, 2, 2)
+        self.operators_grid.addWidget(self.button_round, 3, 2)
 
         self.displays_grid.addWidget(self.display_formula, 0, 0)
         self.displays_grid.addWidget(self.display,1,0)
@@ -198,12 +214,18 @@ class mainWindow(QMainWindow):
         self.display.setText('')
         self.display_formula.setText('')
         self.operation_list_clear()
+        self.number_allowed_change(True)
 
     def click_button_clear_recent(self):
-        if len(self.operation_list) > 0:
-            self.display.setText('')
+        if self.display.text() != "":       #in first place removes a number from display
+            self.display.setText(self.display.text()[:-1])
+        elif len(self.operation_list) > 0:      #removes part of the formula
             self.operation_list_remove_last()
             self.display_formula.setText(" ".join(self.operation_list))
+            if self.operation_list[-1] not in self.operators:
+                self.number_allowed_change(False)
+            else:
+                self.number_allowed_change(True)
 
     def click_button_plus(self):
         self.append_number()
@@ -251,7 +273,7 @@ class mainWindow(QMainWindow):
         self.display_formula.setText(" ".join(self.operation_list))
 
 
-    def click_button_power(self):
+    def click_button_2power(self):
         self.append_number()
 
         if len(self.operation_list) > 0:
@@ -280,29 +302,56 @@ class mainWindow(QMainWindow):
 
         self.display_formula.setText(" ".join(self.operation_list))
 
+    def click_button_cbrt(self):
+        self.append_number()
+
+        if len(self.operation_list) > 0:
+            if self.operation_list[-1] not in self.operators:
+                self.operation_list_append('** (1/3)')
+
+        self.display_formula.setText(" ".join(self.operation_list))
+
+
+    def click_button_3power(self):
+        self.append_number()
+
+        if len(self.operation_list) > 0:
+            if self.operation_list[-1] not in self.operators:
+                self.operation_list_append('** 3')
+
+        self.display_formula.setText(" ".join(self.operation_list))
+
+    def click_button_absolute(self):
+        self.display.setText(str(abs(float(self.display.text()))))
+
+    def click_button_round(self):
+        self.display.setText(str(round(float(self.display.text()))))
+
     def click_button_equals(self):
 
         if self.check_formula():
             try:
                 self.display_formula.setText(" ".join(self.operation_list) + " " + self.display.text() + " =")
-                self.display.setText(str(eval(" ".join(self.operation_list) + " " + self.display.text())))
+                self.display.setText(str(eval(" ".join(self.operation_list) + " " + self.display.text())))      #evaluate equation
                 self.operation_list_clear()
+                if float(self.display.text()).is_integer():                 #if number is whole, convert to integer
+                    self.display.setText(str(int(float(self.display.text()))))
+
             except ZeroDivisionError:
+                self.display.setText('Division by 0 is forbidden!')
                 self.operation_list_clear()
 
             self.number_allowed_change(False)
-        else:
-            print('oky')
 
 
-    def append_number(self):
+    def append_number(self):        #appends number from display under conditions
         if self.display.text() != '':
             self.operation_list_append(self.display.text())
             self.display.setText('')
-            self.number_allowed_change(True)
+        self.number_allowed_change(True)
 
-    def check_formula(self):
-        if self.operation_list.count('(') == self.operation_list.count(')') and self.display.text() != '':
+    def check_formula(self):        #internal function of click_button_equals
+        if self.operation_list.count('(') == self.operation_list.count(')') and (self.display.text() != "" or self.operation_list[-1] in ['(',')','** 2','** 0.5','** 3','** (1/3)']):
             return True
 
 
@@ -312,7 +361,7 @@ def main():
     window = mainWindow()
     window.show()
     window.raise_()
-    app.exec()
+    app.exec_()
 
 if __name__ == '__main__':
     main()
