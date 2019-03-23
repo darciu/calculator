@@ -7,7 +7,7 @@ A simple calculator. It is able to perform selected, basic mathematical operatio
 ## Prerequisites
 
 This code was written in Python ver. 3.6
-Please install PyQt4
+Please install PyQt5
 
 ## Start up
 
