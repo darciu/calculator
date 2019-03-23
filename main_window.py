@@ -1,5 +1,6 @@
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import QMainWindow, QWidget, QStackedLayout, QLineEdit, QPushButton, QGridLayout, QApplication
+from PyQt5.QtCore import Qt
+
 import sys
 
 class mainWindow(QMainWindow):
